@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 
 const User = require("../../models/User");
+const errorHandler = require("../utils/errorHandler");
+const successHandler = require("../utils/successHandler");
 
 async function post(req, res) {
   const { username, password } = req.body;
@@ -9,37 +11,52 @@ async function post(req, res) {
     const user = await User.findOne({ username });
 
     if (user) {
-      console.error("Error on register user, username is already taken");
-      res.status(400).json({ message: { body: "Username is already taken", error: true } });
+      errorHandler(
+        res,
+        400,
+        "Error on register user, username is already taken",
+        "Username is already taken"
+      );
       return;
     }
   } catch (err) {
-    console.error("Error on register user, fail to find user\n", err);
-    res.status(500).json({ message: { body: "Error on register user", error: true } });
+    errorHandler(
+      res,
+      500,
+      "Error on register user, fail on find user",
+      "Error on register user",
+      err
+    );
     return;
   }
 
   if (username.length < 5) {
-    console.error("Error on register user, username is too short");
-    res.status(500).json({ message: { body: "Username is too short", error: true } });
+    errorHandler(
+      res,
+      500,
+      "Error on register user, username is too short",
+      "Username is too short"
+    );
     return;
   }
 
   if (username.length > 15) {
-    console.error("Error on register user, username is too long");
-    res.status(500).json({ message: { body: "Username is too long", error: true } });
+    errorHandler(res, 500, "Error on register user, username is too long", "Username is too long");
     return;
   }
 
   if (password.length < 5) {
-    console.error("Error on register user, password is too short");
-    res.status(500).json({ message: { body: "Password is too short", error: true } });
+    errorHandler(
+      res,
+      500,
+      "Error on register user, password is too short",
+      "Password is too short"
+    );
     return;
   }
 
   if (password.length > 15) {
-    console.error("Error on register user, password is too long");
-    res.status(500).json({ message: { body: "Password is too long", error: true } });
+    errorHandler(res, 500, "Error on register user, password is too long", "Password is too long");
     return;
   }
 
@@ -48,8 +65,13 @@ async function post(req, res) {
   try {
     passwordHashed = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT));
   } catch (err) {
-    console.error("Error on register user, fail to hash password\n", err);
-    res.status(500).json({ message: { body: "Error on register user", error: true } });
+    errorHandler(
+      res,
+      500,
+      "Error on register user, fail on hash password",
+      "Error on register user",
+      err
+    );
     return;
   }
 
@@ -58,11 +80,16 @@ async function post(req, res) {
   try {
     await newUser.save();
 
-    res.status(201).json({ message: { body: "Account successfully created", error: false } });
+    successHandler(res, 201, "Account successfully created");
     return;
   } catch (err) {
-    console.error("Error on register user, fail to save new user\n", err);
-    res.status(500).json({ message: { body: "Error on register user", error: true } });
+    errorHandler(
+      res,
+      500,
+      "Error on register user, fail to save new user",
+      "Error on register user",
+      err
+    );
     return;
   }
 }
