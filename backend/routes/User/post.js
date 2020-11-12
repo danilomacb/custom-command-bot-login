@@ -61,7 +61,6 @@ async function post(req, res) {
   }
 
   let passwordHashed;
-
   try {
     passwordHashed = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT));
   } catch (err) {
