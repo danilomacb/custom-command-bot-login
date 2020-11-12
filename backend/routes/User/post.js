@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 
 const User = require("../../models/User");
 const errorHandler = require("../utils/errorHandler");
-const successHandler = require("../utils/successHandler");
 
 async function post(req, res) {
   const { username, password } = req.body;
@@ -79,7 +78,7 @@ async function post(req, res) {
   try {
     await newUser.save();
 
-    successHandler(res, 201, "Account successfully created");
+    res.status(201).json({ message: "Account successfully created" });
     return;
   } catch (err) {
     errorHandler(
