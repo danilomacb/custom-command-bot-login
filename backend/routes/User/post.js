@@ -6,6 +6,16 @@ const errorHandler = require("../utils/errorHandler");
 async function post(req, res) {
   const { username, password, email } = req.body;
 
+  if(!username) {
+    errorHandler(res, 500, "Error on register user, username is missing", "Username is missing");
+    return;
+  }
+
+  if(!password) {
+    errorHandler(res, 500, "Error on register user, password is missing", "Password is missing");
+    return;
+  }
+
   if (!email) {
     errorHandler(res, 500, "Error on register user, email is missing", "Email is missing");
     return;
