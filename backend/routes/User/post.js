@@ -4,7 +4,12 @@ const User = require("../../models/User");
 const errorHandler = require("../utils/errorHandler");
 
 async function post(req, res) {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
+
+  if (!email) {
+    errorHandler(res, 500, "Error on register user, email is missing", "Email is missing");
+    return;
+  }
 
   try {
     const user = await User.findOne({ username });
@@ -73,7 +78,7 @@ async function post(req, res) {
     return;
   }
 
-  const newUser = new User({ username, password: passwordHashed });
+  const newUser = new User({ username, password: passwordHashed, email });
 
   try {
     await newUser.save();
